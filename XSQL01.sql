@@ -1,7 +1,7 @@
 /*
 SQL QUERYING FUNDAMENTALS
 DEMO AND ACTIVITY CODE
-NOVEMBER 25, 2019
+DECEMBER 20, 2019
 */
 
 --LESSON 1: EXECUTING A SIMPLE QUERY 
@@ -15,7 +15,7 @@ USE FullerAckerman
 
  --TOPIC B
 
-SELECT custname, city
+SELECT custname, city --column names are not case sensitive
 FROM customers
 WHERE state = 'NY'
 
@@ -47,9 +47,9 @@ FROM titles
 
  --TOPIC D 
 
-SELECT custname, state, city
-FROM customers
-WHERE city = 'Rochester'
+--SELECT custname, state, city
+--FROM customers
+--WHERE city = 'Rochester'
 
 
 
@@ -104,7 +104,7 @@ WHERE repid= 'N02'
 
 SELECT partnum, bktitle, slprice
 FROM titles
-WHERE slprice > 100
+WHERE slprice < 100
 
 
 
@@ -144,7 +144,7 @@ WHERE slprice + 20 > 50
 
 
 
-SELECT bktitle, pubdate, slprice + 20 AS 'plus20'
+SELECT bktitle, pubdate, slprice + 20 AS 'plus20' --alias
 FROM titles
 WHERE slprice + 20 > 50
 
@@ -164,6 +164,9 @@ WHERE slprice + slprice * .05 > 50
 
 
 
+--SELECT bktitle, slprice + slprice * .05 newslprice
+--FROM titles
+--WHERE newlsprice > 50
 
 SELECT custnum, city, state
 FROM customers
@@ -195,7 +198,17 @@ WHERE state = 'MA' OR state = 'CA'
 
 SELECT custnum, city, state, custname
 FROM customers
-WHERE NOT city = 'Ryebrook'
+WHERE  city != 'Ryebrook'
+
+
+SELECT custnum, city, state, custname
+FROM customers
+WHERE  city <> 'Ryebrook'
+
+
+SELECT custnum, city, state, custname
+FROM customers
+WHERE  NOT city = 'Ryebrook'
 
 
 
@@ -289,6 +302,10 @@ WHERE slprice BETWEEN 35 and 45 AND devcost IS NULL
 
 
 
+SELECT bktitle, slprice, devcost
+FROM titles
+WHERE slprice BETWEEN 35 and 45 AND devcost = NULL
+
 
 SELECT bktitle, slprice, devcost
 FROM titles
@@ -355,19 +372,19 @@ WHERE bktitle LIKE '%art%'
 
 SELECT bktitle, partnum, slprice
 FROM Titles
-WHERE bktitle LIKE '[AMC]%'
+WHERE bktitle LIKE '[AMC]%' --starts with a, m, or c
 
 
 
 SELECT bktitle, partnum, slprice
 FROM Titles
-WHERE bktitle LIKE '[A-G]%'
+WHERE bktitle LIKE '[A-G]%'  -- starts with ABCDEFG
 
 
 
 SELECT custnum, custname, city
 FROM Customers
-WHERE custnum LIKE '____'
+WHERE custnum LIKE '____' -- _ _ _ _ 
 
 
 
@@ -380,7 +397,7 @@ WHERE custnum LIKE '___[19]'
 
 --TOPIC A 
 
-SELECT bktitle, DATEADD(month, 3, pubdate), GETDATE()
+SELECT bktitle, pubdate, DATEADD(month, 3, pubdate), GETDATE()
 FROM titles
 
 
@@ -416,9 +433,16 @@ WHERE DATEPART(YEAR, pubdate) BETWEEN 1990 AND 1999
 
  --TOPIC B
 
+SELECT * FROM Sales
+
 SELECT COUNT(qty) AS total_qty, AVG(qty) AS avg_qty
 FROM sales
 
+
+SELECT city FROM Customers
+
+SELECT DISTINCT city --, state
+FROM customers
 
 
 
@@ -426,7 +450,8 @@ SELECT DISTINCT city, state
 FROM customers
 
 
-
+SELECT custname + ' in ' +  RTRIM(city) + ', ' + state
+FROM Customers
 
  --ACTIVITY 3-2
 
@@ -475,11 +500,14 @@ WHERE state = 'NY'
 
 SELECT repid, lname AS lastname, fname AS firstname
 FROM slspers
+
+
 SELECT repid, LTRIM(lname) AS lastname, RTRIM(fname) AS firstname
 FROM slspers
 
 
-
+SELECT repid, RTRIM(lname) + ', ' + RTRIM(fname)
+FROM Slspers
 
 SELECT custnum, custname, 'NEW YORK' AS statename
 FROM customers
@@ -514,9 +542,11 @@ FROM slspers
 
 
  --ACTIVITY 3-3
-SELECT repid, RTRIM(fname) + ' ' + lname AS representative_name
+SELECT repid, RTRIM(fname) + ' ' + RTRIM(lname) AS representative_name
 FROM slspers
 
+SELECT repid, RTRIM(fname) + ' ' + lname AS representative_name
+FROM slspers
 
 
 SELECT custname, RTRIM(address) + ', ' + RTRIM(city) + ', '
@@ -559,7 +589,10 @@ FROM Titles
 WHERE devcost IS NOT NULL
 ORDER BY bktitle
 
-
+SELECT bktitle, devcost, slprice, devcost/slprice as break_even_point
+FROM Titles
+WHERE devcost IS NOT NULL
+ORDER BY break_even_point
 
 
 --TOPIC B
@@ -570,6 +603,11 @@ FROM sales
 WHERE qty > 300
 
 
+
+SELECT repid, qty, custnum
+	, RANK() OVER(ORDER BY qty DESC) AS 'Rank'
+FROM sales
+WHERE qty > 300
 
 
 SELECT repid, qty, custnum
@@ -884,9 +922,10 @@ ORDER BY lname, partnum
 
 
 
-SELECT custnum, fname, lname
+SELECT custnum, fname, lname, slspers.repid
 FROM sales
-INNER JOIN slspers ON sales.repid = slspers.repid
+INNER JOIN slspers 
+ON sales.repid = slspers.repid
 ORDER BY custnum
 
 
